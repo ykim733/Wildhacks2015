@@ -52,12 +52,15 @@ void probabilitymove(player p){
 	srand(time(NULL));
 	if(p.handposition==2 && rand() % 100 +1 >95 ){
 		p.handposition=0;
+		cout<<"You're punch missed"<<endl;
 	}
 	if(p.handposition==3 && rand() % 100 +1 >85){
 		p.handposition=0;
+		cout<<"You're Mega-Punch Missed"<<endl;
 	}
 	if(p.handposition==4 && rand() % 100 +1 >95){
 		p.handposition==0;
+		cout<<"You're shield failed"<<endl;
 	}
 }
 
