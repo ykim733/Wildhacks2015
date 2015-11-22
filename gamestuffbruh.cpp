@@ -1,4 +1,7 @@
 #include <iostream>
+#include <time.h>
+#include <stdio.h>
+#include <math.h> 
 using namespace std;
 
 class player{
@@ -6,14 +9,14 @@ class player{
 		string name;
 		int hp;
 		int charge;
-		int handposition; //0 is no value, 1 is charge, 2 is shoot, 3 is shield
+		int handposition; //0 is no value, 1 is charge, 2 is punch, 3 is megapunch, 4 is shield
 };
 
 void chargepunch? (player p){
-	if(p.handposition==2 && p.charge==0){
+	if((p.handposition==2 && p.charge==0) || (p.handposition==3 && p.charge<3)){
 		p.hp=p.hp-1;
 		p.handposition=0;
-		cout<<"WARNING: YOU PUNCHED WHEN YOU HAD ZERO CHARGE, MINUS ONE HP";
+		cout<<"WARNING: YOU ATTACKED WITHOUT ENOUGH CHARGE, MINUS ONE HP"<<endl;
 	}
 }
 
@@ -24,18 +27,37 @@ void initializep(player p, int health, string n){
 	p.handposition=0;
 }
 
-void addcharge(player p){
-	if(p.handposition==1){
-		p.charge=p.charge+1;
-	}
-}
-
 void assigndamage (player p1, player p2){
 	if(p1.handposition<=1 && p2.handposition==2){
 		p1.hp==p1.hp-2;
 	}
 	else if(p1.handposition==2 && p2.handposition<=1){
 		p2.hp=p2.hp-2;
+	}
+	else if(p1.handposition==3 && p1.handposition<=1){
+		p2.hp=p2.hp-8;
+	}
+	else if(p1.handposition==3 && p1.handposition==4){
+		p2.hp=p2.hp-6;
+	}
+	else if(p2.handposition==3 && p1.handposition<=1){
+		p1.hp=p1.hp-8;
+	}
+	else if(p2.handposition==3 && p1.handposition==4){
+		p1.hp=p1.hp-6;
+	}
+}
+
+void probabilitymove(player p){
+	srand(time(NULL));
+	if(p.handposition==2 && rand() % 100 +1 >95 ){
+		p.handposition=0;
+	}
+	if(p.handposition==3 && rand() % 100 +1 >85){
+		p.handposition=0;
+	}
+	if(p.handposition==4 && rand() % 100 +1 >95){
+		p.handposition==0;
 	}
 }
 
@@ -45,28 +67,36 @@ void assignhandpos(player p1, player p2, myo myo1, myo myo2){
 	p2.handposition=num(myo2);
 }
 void updatecharge(player p){
-	if(p.handposition==2){
+	if(p.handposition==1){
+		p.charge=p.charge+1;
+	}
+	else if(p.handposition==2){
 		p.charge=p.charge-1;
+	}
+	else if(p.handposition==3){
+		p.charge=p.charge-3;
 	}
 }
 
-player gameloop(double time, player player1, player player2, myo myo1, myo myo2){
+player gameloop(double t, player player1, player player2, myo myo1, myo myo2){
 	clock_t start;
 	start=clock();
 	duration = 0;
-	while(duration<time||player1.hp<=0||player2.hp<=0){
+	while(duration<t||player1.hp<=0||player2.hp<=0){
 		//assign handpositions here:
 		assignhandpos(player1,player2,myo1,myo2);
 		chargepunch?(player1);
 		chargepunch?(player2);
 		updatecharge(player1);
 		updatecharge(player2);
+		probabilitymove(player1);
+		probabilitymove(player2);
 		assigndamage(player1, player2);
 		//resets hand positions
 		p1.handposition=0;
 		p2.handposition=0;
 		duration=(clock()-start)/(double)CLOCKS_PER_SEC;
-		cout<<"Time Remaining: " << time-duration;
+		cout<<"Time Remaining: " << t-duration<<endl;
 	}
 	if(p1ayer1.hp<player2.hp){
 		return player1;
@@ -97,9 +127,9 @@ player initializegame(myo1, myo2){
 	initializep(player1, hpplay1, name1);
 	initializep(player2, hpplay2, name2);
 	cout<<"How long do you want to play?"<<endl;
-	double time;
-	cin>>time;
-	return gameloop(time, player1, player2, myo1, myo2);
+	double t;
+	cin>>t;
+	return gameloop(t, player1, player2, myo1, myo2);
 }
 
 int main{
